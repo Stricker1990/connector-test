@@ -1,6 +1,13 @@
+import axios, { AxiosInstance } from "axios";
+
 export default class SpaceXService {
-    static readonly BASE_URL = 'https://api.spacexdata.com';
+    private client: AxiosInstance;
+    constructor() {
+        this.client = axios.create({
+            baseURL: 'https://api.spacexdata.com/'
+        });
+    }
     async getRocketById(id: string) {
-        return `rocket: ${id}`;
+        return this.client.get(`https://api.spacexdata.com/v4/rockets/${id}`);
     }
 }
