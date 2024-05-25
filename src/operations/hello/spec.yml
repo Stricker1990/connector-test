@@ -1,0 +1,6 @@
+get:
+  operationId: hello
+  responses:
+    "200":
+      description: "Say hello"
+      content: {}
