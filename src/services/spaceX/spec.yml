@@ -10,4 +10,7 @@ get:
   responses:
     "200":
       description: "Get a rocket"
-      content: {}
+      content:
+        appication/json:
+          schema:
+            $ref: ../../../unify/Rocket.json
