@@ -6,9 +6,9 @@ import SpaceXService from "services/spaceX";
 const spaceXService = new SpaceXService();
 
 export const handleRocketsOne = async (_route: Route): Promise<Result | null> => {
-  const { status, data } = await spaceXService.getRocketById(_route.pathParameters?.rocketId);
+  const rocket = await spaceXService.getRocketById(_route.pathParameters?.rocketId);
   return {
-    status: status,
-    body: data,
+    status: 200,
+    body: rocket,
   };
 };
