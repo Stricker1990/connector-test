@@ -20,6 +20,13 @@ paths:
   /space/rockets/{rocketId}:
     get:
       operationId: rocketsOne
+      parameters:
+        - name: rocketId
+          required: true
+          in: path
+          schema:
+            type: string
+            example: 5e9d0d95eda69955f709d1eb
       responses:
         "200":
           description: "Get a rocket"
