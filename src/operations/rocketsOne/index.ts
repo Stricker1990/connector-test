@@ -1,14 +1,22 @@
 import { Result } from "dispatch";
 import { Route } from "OpenApiRouter";
 
-import SpaceXService from "services/spaceX";
+import SpaceXService, { SpaceXError } from "services/spaceX";
 
 const spaceXService = new SpaceXService();
 
 export const handleRocketsOne = async (_route: Route): Promise<Result | null> => {
-  const rocket = await spaceXService.getRocketById(_route.pathParameters?.rocketId);
-  return {
-    status: 200,
-    body: rocket,
-  };
+  try {
+    const rocket = await spaceXService.getRocketById(_route.pathParameters?.rocketId);
+    return {
+      status: 200,
+      body: rocket,
+    };
+  } catch(error) {
+    const { status, message } = error as SpaceXError;
+    return {
+      status,
+      body: message
+    }
+  }
 };

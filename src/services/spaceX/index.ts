@@ -1,4 +1,6 @@
-import axios, { AxiosInstance } from "axios";
+import axios, { AxiosError, AxiosInstance } from "axios";
+import joi from 'joi';
+
 import Rocket from "operations/rocketsOne/Rocket";
 
 interface SpaceXResponse {
@@ -7,6 +9,23 @@ interface SpaceXResponse {
     country: string;
     flickr_images: string[];
     cost_per_launch: number;
+    message?: string;
+}
+
+const SpaceXResponseJoiScheme = joi.object({
+    id: joi.string().required(),
+    company: joi.string().required(),
+    country: joi.string().required(),
+    flickr_images: joi.array().items(joi.string().uri()),
+    cost_per_launch: joi.number()
+});
+
+export class SpaceXError extends Error {
+    public readonly status: number;
+    constructor(message: string, status: number){
+        super(message);
+        this.status = status;
+    }
 }
 
 export default class SpaceXService {
@@ -16,10 +35,23 @@ export default class SpaceXService {
             baseURL: 'https://api.spacexdata.com/'
         });
     }
-    async getRocketById(id: string): Promise<Rocket>  {
-        const { data } = await this.client.get<SpaceXResponse>(`https://api.spacexdata.com/v4/rockets/${id}`);
-        const rocket = this.mapSpaceXResponse(data);
-        return rocket;
+    async getRocketById(id: string): Promise<Rocket | null>  {
+        try {
+            const { data } = await this.client.get<SpaceXResponse>(`https://api.spacexdata.com/v4/rockets/${id}`);
+            const validationResult = SpaceXResponseJoiScheme.validate(data, { allowUnknown: true });
+            if (validationResult.error) {
+                console.log(validationResult.error);
+                throw new SpaceXError('Wrong spaceX Service response', 500);
+            }
+
+            const rocket = this.mapSpaceXResponse(data as SpaceXResponse);
+            return rocket;
+        }catch(error) {
+            if(error instanceof AxiosError) {
+                throw new SpaceXError(error.response?.data, error.response?.status || 500);
+            }
+        }
+        return null;
     }
 
     private mapSpaceXResponse(spaceXResponse: SpaceXResponse): Rocket {
