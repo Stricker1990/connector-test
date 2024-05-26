@@ -3,7 +3,7 @@ import joi from 'joi';
 
 import Rocket from "operations/rocketsOne/Rocket";
 
-interface SpaceXResponse {
+export interface SpaceXResponse {
     id: string;
     company: string;
     country: string;
