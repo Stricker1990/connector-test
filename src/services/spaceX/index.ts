@@ -40,7 +40,6 @@ export default class SpaceXService {
             const { data } = await this.client.get<SpaceXResponse>(`https://api.spacexdata.com/v4/rockets/${id}`);
             const validationResult = SpaceXResponseJoiScheme.validate(data, { allowUnknown: true });
             if (validationResult.error) {
-                console.log(validationResult.error);
                 throw new SpaceXError('Wrong spaceX Service response', 500);
             }
 

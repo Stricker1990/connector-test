@@ -1,5 +1,6 @@
-import axios from "axios";
-import SpaceXService, { SpaceXResponse } from ".";
+import axios, { AxiosError, AxiosResponse } from "axios";
+import SpaceXService, { SpaceXError, SpaceXResponse } from ".";
+import { error } from "console";
 
 jest.mock('axios');
 
@@ -30,5 +31,21 @@ describe("SpaceXService", () => {
             expect(axios.get).toHaveBeenCalledTimes(1);
             expect(rocket).toEqual(rocket);
         });
+        it("Shoud generate error for non 200 status", async () => {
+            (axios.get as jest.Mock).mockRejectedValueOnce({
+                response: {
+                    status: 404,
+                    statusText: 'Not Found',
+                    data: {
+                        message: 'Not Found',
+                    },
+                },
+            } as AxiosError);
+            try {
+                await spaceXService?.getRocketById("any_wrong_id");
+            } catch(error) {
+                expect(error).toEqual(new SpaceXError("Not Found", 404));
+            }
+        })
     });
 });
